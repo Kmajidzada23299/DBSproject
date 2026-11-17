@@ -1,26 +1,36 @@
-n,s=map(int,input().split())
+import os
 
-for i in range(1,n+1):
-    with open(f"{i}.txt",'w') as f:
+n, s = map(int, input().split())
+
+for i in range(1, n + 1):
+    with open(f"{i}.txt", 'a') as f:
         pass
 
 while True:
     try:
         line = input()
-        if(line=='\\end'):
+        if (line == '\\end'):
             break
-        str = f"{(ord(line[0]) % n)+1}.txt"
-        with(open(str, 'r')) as f:
-            l=len(f.read())+len(line)
-            print(l)
-            if l > s:
-                str=f"{(ord(line[0]) % n)+1}-1.txt"
-                with open(str,'a') as f:
-                    f.write(line)
-            else:
-                with open(str,'a') as f:
-                    f.write(line)
-            print(str)
+        if (line == ''):
+            continue
+        hsh = (ord(line[0]) % n) + 1
+        str = f"{hsh}.txt"
+        i = 1
+        while os.path.exists(str):
+            with(open(str, 'a+')) as f:
+                f.seek(0)
+                l = len(f.read().replace('\n', "")) + len(line)
+            if l <= s:
+                break
+            str = f"{hsh}-{i}.txt"
+            i = i + 1
+        else:
+            l = len(line)
+        with open(str, 'a') as f:
+            print(f"{l} characters in the file. At most {s-l} more chars to go")
+            f.write(line + "\n")
+
+        print(str)
     except (EOFError, KeyboardInterrupt):
         break
 
