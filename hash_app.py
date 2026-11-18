@@ -1,5 +1,5 @@
-import os
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type=int, help="number of buckets")
@@ -34,14 +34,16 @@ while True:
             if (line == '\\end'):
                 break
 
-            if (line=="\\d"):
+            elif (line == "\\d"):
 
                 for file in os.listdir("."):
 
                     if file.endswith(".txt"):
                         print(file)
 
-            if (line=="\\getfile"):
+                continue
+
+            elif (line == "\\getfile"):
                 print(">", end=" ")
 
                 try:
@@ -50,9 +52,12 @@ while True:
 
                 except FileNotFoundError:
                     print("file not found")
+                    
+                continue
 
-            continue
-
+            elif (line == "\\exists"):
+                print("yes" if input("file name:") in os.listdir(".") else "no")
+                continue
 
         if (len(line) > s):
             print("String cannot fit into bucket size that was allocated by second input at the start of the program")
@@ -61,28 +66,47 @@ while True:
 
         hsh = hash_func(line) + 1
         string = f"{hsh}.txt"
-        i = 1
+        i = 0
 
         while os.path.exists(string):
 
             with(open(string, 'a+')) as f:
                 f.seek(0)
-                l = len(f.read()) + len(line)
+                text = f.read()
+
+                if ('\n' in text):
+                    header = text.find('\n')
+                    prev = string
+                    string = text[:header]
+                    i = i + 1
+                    continue
+            l = len(text) + len(line)
 
             if l <= s:
                 break
 
-            string = f"{hsh}-{i}.txt"
-            i = i + 1
+            if (i == 0):
+                string = f"{hsh}-1.txt"
+                prev = f"{hsh}.txt"
+            else:
+                string = f"{hsh}-{i + 1}.txt"
+                prev = f"{hsh}-{i}.txt"
+
+
 
         else:
+            with open(prev, 'r+') as f:
+                data = f.read()
+                f.seek(0)
+                f.write(string + '\n' + data)
+                f.truncate()
             l = len(line)
 
         with open(string, 'a') as f:
             print(f"{l} characters in the file. {s - l} free slots remain")
             f.write(line)
 
-        print(f"Test added to {string}")
+        print(f"Text added to {string}")
 
     except (EOFError, KeyboardInterrupt):
         break
