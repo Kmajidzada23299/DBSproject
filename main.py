@@ -1,16 +1,20 @@
 import os
+import argparse
 
-n, s = map(int, input().split())
+parser = argparse.ArgumentParser()
+parser.add_argument("n", type=int, help="number of buckets")
+parser.add_argument("s", type=int, help="bucket size")
+arguments = parser.parse_args()
+n, s = arguments.n, arguments.s
 
+def hash_func(input_string):
+    hash_num = 0
+    ln = len(input_string)
 
-def hashfunc(string):
-    hsh = 0
-    l = len(string)
+    for x in range(ln):
+        hash_num += (ord(input_string[x]) * pow(31, ln - x - 1, n)) % n
 
-    for x in range(l):
-        hsh += ord(string[x]) * pow(31, l - x - 1) % n
-
-    return hsh % n
+    return hash_num % n
 
 
 for i in range(1, n + 1):
@@ -22,18 +26,40 @@ while True:
     try:
         line = input("Please enter the string:")
 
-        if (line == '\\end'):
-            break
-
         if (line == ''):
             continue
+
+        if (line[0] == "\\"):
+
+            if (line == '\\end'):
+                break
+
+            if (line=="\\d"):
+
+                for file in os.listdir("."):
+
+                    if file.endswith(".txt"):
+                        print(file)
+
+            if (line=="\\getfile"):
+                print(">", end=" ")
+
+                try:
+                    with open(input("file name:"), 'r') as f:
+                        print("> "+ f.read())
+
+                except FileNotFoundError:
+                    print("file not found")
+
+            continue
+
 
         if (len(line) > s):
             print("String cannot fit into bucket size that was allocated by second input at the start of the program")
             print("Restart the program with higher s parameter or use shorter text")
             continue
 
-        hsh = hashfunc(line) + 1
+        hsh = hash_func(line) + 1
         string = f"{hsh}.txt"
         i = 1
 
