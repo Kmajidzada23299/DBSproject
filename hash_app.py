@@ -16,8 +16,8 @@ def hash_func(input_string):
 
     return hash_num % n
 
-
 for i in range(1, n + 1):
+
     with open(f"{i}.txt", 'a') as f:
         pass
 
@@ -47,12 +47,13 @@ while True:
                 print(">", end=" ")
 
                 try:
+
                     with open(input("file name:"), 'r') as f:
-                        print("> "+ f.read())
+                        print("> " + f.read())
 
                 except FileNotFoundError:
                     print("file not found")
-                    
+
                 continue
 
             elif (line == "\\exists"):
@@ -80,6 +81,7 @@ while True:
                     string = text[:header]
                     i = i + 1
                     continue
+
             l = len(text) + len(line)
 
             if l <= s:
@@ -88,18 +90,19 @@ while True:
             if (i == 0):
                 string = f"{hsh}-1.txt"
                 prev = f"{hsh}.txt"
+
             else:
                 string = f"{hsh}-{i + 1}.txt"
                 prev = f"{hsh}-{i}.txt"
 
-
-
         else:
+
             with open(prev, 'r+') as f:
                 data = f.read()
                 f.seek(0)
                 f.write(string + '\n' + data)
                 f.truncate()
+
             l = len(line)
 
         with open(string, 'a') as f:
